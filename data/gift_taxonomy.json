@@ -1,0 +1,31 @@
+[
+  {
+    "id": "wireless_earbuds",
+    "category": "tech",
+    "price_min": 40,
+    "price_max": 150,
+    "tags": [
+      "music",
+      "fitness",
+      "travel"
+    ],
+    "age_range": [
+      15,
+      45
+    ]
+  },
+  {
+    "id": "artisan_candle",
+    "category": "home",
+    "price_min": 20,
+    "price_max": 60,
+    "tags": [
+      "relaxation",
+      "aesthetic"
+    ],
+    "age_range": [
+      18,
+      65
+    ]
+  }
+]
