@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "title": "Ceramic Baking Set",
+    "tags": ["baking", "kitchen", "cooking", "giftable"],
+    "price": 35,
+    "vendor": "Hive Vendor A",
+    "popularity": 12,
+    "feedback_score": 4
+  },
+  {
+    "id": 2,
+    "title": "Smart Herb Garden",
+    "tags": ["kitchen", "tech", "gadgets", "home"],
+    "price": 48,
+    "vendor": "Hive Vendor B",
+    "popularity": 20,
+    "feedback_score": 2
+  },
+  {
+    "id": 3,
+    "title": "Aromatherapy Blanket",
+    "tags": ["comfort", "home", "self-care", "relaxation"],
+    "price": 42,
+    "vendor": "Hive Vendor C",
+    "popularity": 10,
+    "feedback_score": 5
+  },
+  {
+    "id": 4,
+    "title": "Mini Fitness Tracker",
+    "tags": ["fitness", "gym", "health", "electronics"],
+    "price": 55,
+    "vendor": "Hive Vendor D",
+    "popularity": 18,
+    "feedback_score": 1
+  }
+]
