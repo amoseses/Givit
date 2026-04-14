@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Deployment Preview</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 2rem; background: #f8fafc; color: #111827; }
+      .card { background: #fff; border: 1px solid #d1d5db; border-radius: 10px; padding: 1rem; margin-bottom: 1rem; }
+      .row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+      input { padding: 0.55rem; border: 1px solid #9ca3af; border-radius: 8px; min-width: 220px; }
+      button { padding: 0.55rem 0.9rem; border: 0; border-radius: 8px; background: #2563eb; color: #fff; cursor: pointer; }
+      button.secondary { background: #4b5563; }
+      #status { margin: 0.5rem 0; font-size: 0.9rem; }
+      iframe { width: 100%; min-height: 420px; border: 1px solid #d1d5db; border-radius: 10px; background: #fff; }
+      ul { padding-left: 1.2rem; }
+      code { background: #e5e7eb; padding: 0.1rem 0.3rem; border-radius: 4px; }
+    </style>
+  </head>
+  <body>
+    <h1>Deployment Preview</h1>
+    <p>Preview a deployment URL before adding it to config.</p>
+
+    <div class="card">
+      <div class="row">
+        <input id="name" placeholder="Deployment name (optional)" />
+        <input id="url" placeholder="https://your-deployment-url" />
+        <button id="previewBtn" class="secondary">Preview</button>
+        <button id="addBtn">Add deployment</button>
+      </div>
+      <div id="status"></div>
+      <div><strong>Config:</strong> <code id="configPath">loading...</code></div>
+      <div><strong>Settings:</strong> <code id="settingsPath">loading...</code></div>
+    </div>
+
+    <div class="card">
+      <h3>Live Preview</h3>
+      <iframe id="previewFrame" title="deployment preview"></iframe>
+    </div>
+
+    <div class="card">
+      <h3>Saved Deployments</h3>
+      <ul id="deploymentList"></ul>
+    </div>
+
+    <script>
+      const nameInput = document.getElementById("name");
+      const urlInput = document.getElementById("url");
+      const statusEl = document.getElementById("status");
+      const frame = document.getElementById("previewFrame");
+      const deploymentList = document.getElementById("deploymentList");
+      const configPathEl = document.getElementById("configPath");
+      const settingsPathEl = document.getElementById("settingsPath");
+
+      function setStatus(message, isError = false) {
+        statusEl.textContent = message;
+        statusEl.style.color = isError ? "#b91c1c" : "#065f46";
+      }
+
+      async function loadDeployments() {
+        const data = await fetch("/deployments").then((res) => res.json());
+        configPathEl.textContent = data.configPath;
+        settingsPathEl.textContent = data.settingsPath;
+        deploymentList.innerHTML = "";
+
+        if (!data.deployments.length) {
+          deploymentList.innerHTML = "<li>No deployments added yet.</li>";
+          return;
+        }
+
+        data.deployments.forEach((item) => {
+          const li = document.createElement("li");
+          li.textContent = `${item.name} — ${item.url}`;
+          deploymentList.appendChild(li);
+        });
+      }
+
+      async function preview() {
+        setStatus("Checking deployment...");
+        const payload = { url: urlInput.value };
+        const response = await fetch("/deployments/preview", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const body = await response.json();
+        if (!response.ok) {
+          setStatus(body.error || "Unable to preview deployment.", true);
+          return null;
+        }
+
+        frame.src = body.normalizedUrl;
+        const checkMessage = body.warning ? body.warning : `status: ${body.status}`;
+        setStatus(`Previewing ${body.normalizedUrl} (${checkMessage})`, !body.reachable);
+        return body;
+      }
+
+      async function addDeployment() {
+        const response = await fetch("/deployments", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: nameInput.value,
+            url: urlInput.value
+          })
+        });
+
+        const body = await response.json();
+        if (!response.ok) {
+          setStatus(body.error || "Unable to add deployment.", true);
+          return;
+        }
+
+        setStatus(`Added ${body.deployment.name}`);
+        await loadDeployments();
+      }
+
+      document.getElementById("previewBtn").addEventListener("click", preview);
+      document.getElementById("addBtn").addEventListener("click", addDeployment);
+
+      loadDeployments();
+    </script>
+  </body>
+</html>
