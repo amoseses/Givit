@@ -1,6 +1,13 @@
 from pydantic import BaseModel, Field
 
 
+class ProductMetrics(BaseModel):
+    views: int = 0
+    clicks: int = 0
+    positive_feedback: int = 0
+    negative_feedback: int = 0
+
+
 class Product(BaseModel):
     id: int
     title: str
@@ -8,5 +15,5 @@ class Product(BaseModel):
     price: float
     vendor: str
     popularity: int = 0
-    feedback_score: int = 0
-    score: float = 0
+    metrics: ProductMetrics = Field(default_factory=ProductMetrics)
+    learned_score: float = 0.0

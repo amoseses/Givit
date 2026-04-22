@@ -1,6 +1,6 @@
 # Hive AI (Gift Recommendation API)
 
-Hive AI is a standalone FastAPI backend for gift recommendations. It uses a rule-based tag engine, product matching, ranking logic, and a feedback loop to improve recommendation quality over time.
+Hive AI is a standalone FastAPI backend for gift recommendations. It now behaves like a lightweight self-improving system: recommendations are ranked with weighted signals, feedback updates scores immediately, and behavior metrics are persisted over time.
 
 ## Project structure
 
@@ -27,10 +27,7 @@ backend/
 data/
   products.json
   feedback.json
-
-scripts/
-  import_products.py
-  update_scores.py
+  metrics.json
 ```
 
 ## Setup
@@ -47,12 +44,15 @@ pip install -r requirements.txt
 uvicorn backend.main:app --reload --port 8000
 ```
 
+On startup the app automatically initializes `data/products.json`, `data/feedback.json`, and `data/metrics.json` when missing.
+
 ## API endpoints
 
 - `GET /` health check
 - `GET /products` list product catalog
-- `POST /recommend` recommend gifts
-- `POST /feedback` collect thumbs up/down feedback
+- `GET /metrics` show learning-performance history
+- `POST /recommend` recommend gifts and track product views
+- `POST /feedback` register click/positive/negative feedback and update rankings instantly
 
 ### Example request: `/recommend`
 
@@ -70,11 +70,26 @@ uvicorn backend.main:app --reload --port 8000
 ```json
 {
   "product_id": 1,
-  "rating": 1
+  "action": "positive"
 }
 ```
 
+## Learning details
+
+- Product-level learning metrics are persisted per item:
+  - `views`
+  - `clicks`
+  - `positive_feedback`
+  - `negative_feedback`
+- Learned score formula:
+  - `(positive_feedback * 2 + clicks) / (views + negative_feedback + 1)`
+- Final recommendation score:
+  - `0.5 * match_score + 0.3 * learned_score + 0.2 * budget_score`
+- Metrics history tracks:
+  - average top-5 recommendation score
+  - positive feedback ratio over total feedback events
+
 ## Notes
 
-- Data is file-backed (`data/products.json` and `data/feedback.json`).
-- AI/LLM integration is intentionally excluded from v1 and can be added later.
+- Data is file-backed and uses atomic writes for persistence safety.
+- Tag extraction is pluggable via `rule_based_tags` and an `ai_generated_tags` stub for future LLM integration.

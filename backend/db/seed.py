@@ -9,7 +9,6 @@ SEED_PRODUCTS = [
         "price": 35,
         "vendor": "Hive Vendor A",
         "popularity": 12,
-        "feedback_score": 4,
     },
     {
         "id": 2,
@@ -18,7 +17,6 @@ SEED_PRODUCTS = [
         "price": 48,
         "vendor": "Hive Vendor B",
         "popularity": 20,
-        "feedback_score": 2,
     },
     {
         "id": 3,
@@ -27,7 +25,6 @@ SEED_PRODUCTS = [
         "price": 42,
         "vendor": "Hive Vendor C",
         "popularity": 10,
-        "feedback_score": 5,
     },
     {
         "id": 4,
@@ -36,7 +33,6 @@ SEED_PRODUCTS = [
         "price": 55,
         "vendor": "Hive Vendor D",
         "popularity": 18,
-        "feedback_score": 1,
     },
 ]
 
