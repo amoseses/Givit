@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 
@@ -11,4 +13,4 @@ class RecommendationRequest(BaseModel):
 
 class FeedbackRequest(BaseModel):
     product_id: int
-    rating: int
+    action: Literal["click", "positive", "negative"]

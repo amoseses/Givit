@@ -1,20 +1,20 @@
-def match_products(products: list[dict], tags: list[str], budget: float) -> list[tuple[dict, float]]:
-    results: list[tuple[dict, float]] = []
+from __future__ import annotations
 
+
+def match_products(products: list[dict], tags: list[str], budget: float) -> list[dict]:
+    if not products:
+        return []
+
+    if not tags:
+        return [dict(product) for product in products]
+
+    filtered: list[dict] = []
     for product in products:
-        score = 0.0
+        product_tags = product.get("tags", [])
+        has_overlap = bool(set(product_tags) & set(tags))
+        within_reasonable_budget = budget <= 0 or product.get("price", 0) <= budget * 1.5
 
-        for tag in tags:
-            if tag in product.get("tags", []):
-                score += 3
+        if has_overlap and within_reasonable_budget:
+            filtered.append(dict(product))
 
-        if product.get("price", 0) <= budget:
-            score += 2
-        else:
-            score -= 2
-
-        if score > 0:
-            matched = {**product, "score": score}
-            results.append((matched, score))
-
-    return sorted(results, key=lambda item: item[1], reverse=True)
+    return filtered or [dict(product) for product in products]

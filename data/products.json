@@ -6,7 +6,13 @@
     "price": 35,
     "vendor": "Hive Vendor A",
     "popularity": 12,
-    "feedback_score": 4
+    "metrics": {
+      "views": 0,
+      "clicks": 0,
+      "positive_feedback": 4,
+      "negative_feedback": 0
+    },
+    "learned_score": 8
   },
   {
     "id": 2,
@@ -15,7 +21,13 @@
     "price": 48,
     "vendor": "Hive Vendor B",
     "popularity": 20,
-    "feedback_score": 2
+    "metrics": {
+      "views": 0,
+      "clicks": 0,
+      "positive_feedback": 2,
+      "negative_feedback": 0
+    },
+    "learned_score": 4
   },
   {
     "id": 3,
@@ -24,7 +36,13 @@
     "price": 42,
     "vendor": "Hive Vendor C",
     "popularity": 10,
-    "feedback_score": 5
+    "metrics": {
+      "views": 0,
+      "clicks": 0,
+      "positive_feedback": 5,
+      "negative_feedback": 0
+    },
+    "learned_score": 10
   },
   {
     "id": 4,
@@ -33,6 +51,12 @@
     "price": 55,
     "vendor": "Hive Vendor D",
     "popularity": 18,
-    "feedback_score": 1
+    "metrics": {
+      "views": 0,
+      "clicks": 0,
+      "positive_feedback": 1,
+      "negative_feedback": 0
+    },
+    "learned_score": 2
   }
 ]

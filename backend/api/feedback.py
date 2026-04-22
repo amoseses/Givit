@@ -1,36 +1,30 @@
-from datetime import datetime, timezone
-
 from fastapi import APIRouter, HTTPException
 
-from backend.db.database import append_feedback, load_products, save_products
+from backend.db.database import record_feedback
 from backend.models.user import FeedbackRequest
-from backend.utils.scoring import feedback_delta
 
 router = APIRouter(tags=["feedback"])
 
 
 @router.post("/feedback")
 def feedback(payload: FeedbackRequest) -> dict:
-    if payload.rating not in (-1, 1):
-        raise HTTPException(status_code=400, detail="rating must be -1 or 1")
+    try:
+        result = record_feedback(payload.product_id, payload.action)
+    except KeyError as error:
+        raise HTTPException(status_code=404, detail=str(error)) from error
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
 
-    products = load_products()
+    product = result["product"]
+    rank_position = result["rank_position"]
+    message = "This recommendation improved" if payload.action in {"click", "positive"} else "Feedback recorded"
 
-    for product in products:
-        if product["id"] == payload.product_id:
-            product["feedback_score"] = product.get("feedback_score", 0) + feedback_delta(payload.rating)
-
-            record = {
-                "product_id": payload.product_id,
-                "rating": payload.rating,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-            }
-            append_feedback(record)
-            save_products(products)
-
-            return {
-                "status": "ok",
-                "updated_product": product,
-            }
-
-    raise HTTPException(status_code=404, detail="product not found")
+    return {
+        "status": "ok",
+        "product_id": payload.product_id,
+        "action": payload.action,
+        "updated_score": product.get("learned_score", 0.0),
+        "new_rank_position": rank_position,
+        "message": message,
+        "top_ranked": result["ranking"][:5],
+    }
